@@ -1,25 +1,7 @@
 use bevy::{prelude::*, utils::HashMap};
 use crate::multiplayer::config::Config;
 use crate::engine::fighter::Fighter;
-
 use bevy_ggrs::*;
-
-// #[derive(Event, Debug)]
-// pub enum PlayerStateInputs {
-//     Walk(MoveDirection),
-//     Dash(MoveDirection),
-//     Attack,
-//     AttackHold,
-//     Special,
-//     SpecialHold,
-//     Guard,
-// }
-
-// #[derive(Debug, PartialEq)]
-// pub enum MoveDirection {
-//     Left,
-//     Right,
-// }
 
 const INPUT_UP: u8 = 1 << 0;
 const INPUT_DOWN: u8 = 1 << 1;
@@ -82,7 +64,6 @@ pub fn move_players(
 
         let move_speed = 7.;
         let move_delta = direction * move_speed * time.delta_secs();
-        info!("{} {}", move_delta, input);
         transform.translation += move_delta.extend(0.);
     }
 }

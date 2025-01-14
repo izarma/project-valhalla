@@ -2,6 +2,27 @@ use bevy::{prelude::*, render::camera::ScalingMode};
 
 mod engine;
 mod multiplayer;
+mod animations;
+
+#[derive(States, Clone, Eq, PartialEq, Debug, Hash, Default)]
+enum GameState {
+    #[default]
+    AssetLoading,
+    MainMenu,
+    Matchmaking,
+    Lobby,
+    InGame,
+    GameOver,
+}
+
+#[derive(States, Clone, Eq, PartialEq, Debug, Hash, Default)]
+enum RollbackState {
+    /// When the characters fighting
+    #[default]
+    InRound,
+    /// When one character is dead, and we're transitioning to the next round
+    RoundEnd,
+}
 
 fn main() {
     App::new()
@@ -15,6 +36,7 @@ fn main() {
         }),
         ..default()
     }))
+    .init_state::<GameState>()
     .insert_resource(ClearColor(Color::srgb(0.53, 0.53, 0.53)))
     .add_systems(Startup, setup)
     .add_plugins(engine::game_runner::GameRunnerPlugin)

@@ -2,14 +2,19 @@ use bevy::prelude::*;
 use bevy_matchbox::prelude::*;
 use bevy_ggrs::{ggrs::DesyncDetection, *};
 use crate::multiplayer::config::Config;
+use crate::GameState;
 
 pub fn start_matchbox_socket(mut commands: Commands) {
-    let room_url = "ws://127.0.0.1:3536/fenrir?next=2";
+    let room_url = "ws://127.0.0.1:3536/valhalla?next=2";
     info!("connecting to matchbox server: {room_url}");
     commands.insert_resource(MatchboxSocket::new_unreliable(room_url));
 }
 
-pub fn wait_for_players(mut commands: Commands, mut socket: ResMut<MatchboxSocket>) {
+pub fn wait_for_players(
+    mut commands: Commands,
+    mut socket: ResMut<MatchboxSocket>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
     if socket.get_channel(0).is_err() {
         return; // we've already started
     }
@@ -47,4 +52,5 @@ pub fn wait_for_players(mut commands: Commands, mut socket: ResMut<MatchboxSocke
         .expect("failed to start session");
 
     commands.insert_resource(bevy_ggrs::Session::P2P(ggrs_session));
+    next_state.set(GameState::InGame);
 }
