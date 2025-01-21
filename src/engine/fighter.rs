@@ -5,7 +5,6 @@ use crate::animations::sprite_animations::SpriteAnimState;
 use crate::multiplayer::session_builder::*;
 use crate::engine::fighter_input::*;
 use crate::animations::asset_loader::ImageAssets;
-use crate::animations::fighter_state_animations::*;
 use crate::GameState;
 
 pub struct AddFighterPlugin;
@@ -19,11 +18,13 @@ pub struct Fighter {
 impl Plugin for AddFighterPlugin {
     fn build(&self, app: &mut App) {
         app
+        .add_event::<FighterActions>()
         .add_systems(Startup, start_matchbox_socket)
         .add_systems(Update, wait_for_players)
         .add_systems(OnEnter(GameState::InGame),spawn_fighters)
         .add_systems(ReadInputs, read_local_inputs)
         .add_systems(GgrsSchedule, move_players);
+    
     }
 }
 
@@ -54,7 +55,6 @@ fn spawn_fighters(
             SpriteAnimState {
                 start_index: 0,
                 end_index: 4,
-                frame_size,
                 timer: Timer::from_seconds(1.0/12.0,TimerMode::Repeating),
             }
         ))
@@ -63,13 +63,21 @@ fn spawn_fighters(
     // Player 2
     commands
         .spawn((
-            Fighter { handle: 1},
-            Transform::from_translation(Vec3::new(2., 0., 0.)),
-            Sprite {
-                color: Color::srgb(0., 0.4, 0.),
-                custom_size: Some(Vec2::new(1., 1.)),
-                ..default()
-            },
+            Fighter { handle: 1 },
+            Transform::from_translation(Vec3::new(2., 0., 0.))
+            .with_scale(Vec3::new(-0.05, 0.05, 1.)),
+            Sprite::from_atlas_image(
+                images.idle.clone(),
+                TextureAtlas {
+                    layout: idle_layout_handle.clone(),
+                    index: 0,
+                },
+            ),
+            SpriteAnimState {
+                start_index: 0,
+                end_index: 4,
+                timer: Timer::from_seconds(1.0/12.0,TimerMode::Repeating),
+            }
         ))
         .add_rollback();
 }
