@@ -13,7 +13,9 @@ const INPUT_GUARD: u8 = 1 << 4;
 pub enum FighterActions {
     Attack(usize),
     Special(usize),
-    Guard(usize)
+    Guard(usize),
+    Forward(usize),
+    Backward(usize)
 }
 
 
@@ -33,10 +35,10 @@ pub fn read_local_inputs(
         if keys.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
             input |= INPUT_RIGHT;
         }
-        if keys.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
+        if keys.any_just_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
             input |= INPUT_ATTACK;
         }
-        if keys.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
+        if keys.any_just_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
             input |= INPUT_SPECIAL;
         }
         if keys.any_pressed([KeyCode::Enter, KeyCode::KeyE]) {
@@ -61,21 +63,28 @@ pub fn move_players(
 
         if input & INPUT_ATTACK != 0 {
             fighter_action_event.send(FighterActions::Attack(fighter.handle));
-            info!("Player {} is Attacking", fighter.handle);
         }
         if input & INPUT_SPECIAL != 0 {
             fighter_action_event.send(FighterActions::Special(fighter.handle));
-            info!("Player {} is Special Attacking", fighter.handle);
         }
         if input & INPUT_GUARD != 0 {
             fighter_action_event.send(FighterActions::Guard(fighter.handle));
-            info!("Player {} is Guarding", fighter.handle);
         }
         if input & INPUT_RIGHT != 0 {
             direction.x += 1.;
+            match fighter.handle {
+                0 => fighter_action_event.send(FighterActions::Forward(fighter.handle)),
+                1 => fighter_action_event.send(FighterActions::Backward(fighter.handle)),
+                _ => continue,
+            };
         }
         if input & INPUT_LEFT != 0 {
             direction.x -= 1.;
+            match fighter.handle {
+                0 => fighter_action_event.send(FighterActions::Backward(fighter.handle)),
+                1 => fighter_action_event.send(FighterActions::Forward(fighter.handle)),
+                _ => continue,
+            };
         }
         if direction == Vec2::ZERO {
             continue;
