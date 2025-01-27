@@ -2,7 +2,6 @@ use bevy::prelude::*;
 use crate::engine::fighter::*;
 use crate::engine::fighter_input::*;
 use crate::animations::sprite_animations::*;
-use crate::animations::fighter_state_animations::*;
 
 #[derive(Component, Debug)]
 pub struct PlayerState(pub Vec<PlayerStateKind>);
@@ -19,7 +18,7 @@ impl PlayerState {
     }
     pub fn push_state(&mut self, new_state: PlayerStateKind) {
         // Remove existing same state if needed
-        self.0.retain(|&s| s != new_state);
+        // self.0.retain(|&s| s != new_state);
         // Add new state
         self.0.push(new_state);
     }

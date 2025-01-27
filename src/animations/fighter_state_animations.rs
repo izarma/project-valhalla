@@ -41,6 +41,10 @@ pub fn update_fighter_animation(
         sprite.custom_size = Some(animation.frame_size.as_vec2());
         sprite_anim_state.start_index = 0;
         sprite_anim_state.end_index = animation.frames - 1;
+        sprite.texture_atlas = Some(TextureAtlas {
+            layout: animation.texture_handle.clone(),
+            index: 0,
+        });
 
         // Choose the correct image for the sprite
         sprite.image = match state.current_state() {
@@ -51,11 +55,11 @@ pub fn update_fighter_animation(
         };
 
         // Debugging info for verification
-        info!(
-            "Player {} updated to {:?} animation with {} frames",
-            fighter.handle,
-            state.current_state(),
-            animation.frames
-        );
+        // info!(
+        //     "Player {} updated to {:?} animation with {} frames",
+        //     fighter.handle,
+        //     state.current_state(),
+        //     animation.frames
+        // );
     }
 }
